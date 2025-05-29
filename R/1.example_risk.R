@@ -3,7 +3,7 @@ library(ggplot2)
 library(tidyr)
 library(patchwork)
 
-dir.create("output")
+dir.create("output", showWarnings = FALSE)
 
 my_theme = theme_bw() +
   theme(
