@@ -4,6 +4,8 @@ library(tidyverse)
 library(patchwork)
 library(stats)
 
+dir.create("output", showWarnings = FALSE)
+
 my_theme = theme_classic() +
   theme(
     legend.text = element_text(size = 6),
@@ -57,11 +59,10 @@ find_min_n = function(p1, target_power, max_n) {
 calculate_sample_size_safety = function(p_d_I,
                                         lambda_FOI,
                                         VE = 0.95,
-                                        criterion = 1.0, # Additional safety margin
                                         power = 0.80,
                                         max_n = 1000) {
   # p0: Maximum acceptable adverse event rate
-  p0 = VE * lambda_FOI * p_d_I * criterion
+  p0 = VE * lambda_FOI * p_d_I 
   
   n = find_min_n(p0, target_power = power, max_n = max_n)
 
@@ -71,14 +72,12 @@ calculate_sample_size_safety = function(p_d_I,
 # Create a grid of values
 p_d_I_values = seq(0.00005, 0.51, 0.005)  # Disease severity
 lambda_FOI_values = seq(0.01, 0.5, 0.01)  # Infection probability
-criterion_values = c(1.0)  # Safety margins
 VE = c(0.95)
 
 # Calculate for different FOI and criterion combinations
 results = expand.grid(
   p_d_I = p_d_I_values, 
   lambda_FOI = lambda_FOI_values,
-  criterion = criterion_values,
   VE = VE
 )
 
@@ -197,7 +196,7 @@ ggsave(out1,
 
 # specific events 
 
-# CHIK young 10%
+# CHIK young 30%
 calculate_sample_size_safety(
   p_d_I = all_risk$ifr[1],
   lambda_FOI = c(0.3),
@@ -206,16 +205,7 @@ calculate_sample_size_safety(
   max_n = 400000
 )
 
-# CHIK old 10%
-calculate_sample_size_safety(
-  p_d_I = all_risk$ifr[2],
-  lambda_FOI = c(0.1),
-  criterion = 1,
-  VE = 0.95,
-  max_n = 400000
-)
-
-
+# CHIK old 30%
 calculate_sample_size_safety(
   p_d_I = all_risk$ifr[2],
   lambda_FOI = c(0.3),

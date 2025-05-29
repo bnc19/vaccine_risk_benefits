@@ -1,10 +1,13 @@
 
+# Calculate IXCHIQ risks and benefits given range of VE and AR 
+
 library(Hmisc)
 library(truncnorm)
 library(tidyverse)
 library(cowplot)
 library(patchwork)
 
+dir.create("output", showWarnings = FALSE)
 
 
 my_theme = theme_bw() +

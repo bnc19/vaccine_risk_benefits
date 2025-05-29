@@ -1,11 +1,13 @@
 
+# Calculate probability of IXCHIQ benefit 
+
 library(Hmisc)
 library(truncnorm)
 library(tidyverse)
 library(cowplot)
 library(patchwork)
 
-
+dir.create("output", showWarnings = FALSE)
 source("R/functions.R")
 
 
@@ -213,7 +215,7 @@ ggsave(
 )
 
 
-# sample size to conclude benefit 
+# sample size to conclude benefit of non-fatal SAE
 
 cv_n = extract_beta_params(x = c(4,1), n = c(4000,1000))
 

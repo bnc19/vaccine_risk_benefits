@@ -7,6 +7,7 @@ library(patchwork)
 
 source("R/functions.R")
 
+dir.create("output", showWarnings = FALSE)
 
 my_theme = theme_bw() +
   theme(

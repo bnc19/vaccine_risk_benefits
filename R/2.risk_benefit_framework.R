@@ -1,6 +1,9 @@
 library(tidyverse)
 library(patchwork)
 
+dir.create("output", showWarnings = FALSE)
+
+
 my_theme = theme_bw() +
   theme(
     legend.text = element_text(size = 7),

@@ -3,6 +3,8 @@ library(ggplot2)
 library(tidyr)
 library(patchwork)
 
+dir.create("output")
+
 my_theme = theme_bw() +
   theme(
     legend.text = element_text(size = 7),

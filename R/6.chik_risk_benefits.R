@@ -1,10 +1,14 @@
 
+# Calculate IXCHIQ risks and benefits
+
+
 library(Hmisc)
 library(truncnorm)
 library(tidyverse)
 library(cowplot)
 library(patchwork)
 
+dir.create("output", showWarnings = FALSE)
 
 my_theme = theme_void() +
   theme(
