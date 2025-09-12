@@ -1,4 +1,6 @@
-### Calculate power to detect adverse events in trial 
+# Script to calculate sample size needed to achieve 80% power to detect at least 
+# one death as a function of attack rate and probability of death from infection. 
+# File outputs Figure S2. 
 
 library(tidyverse)
 library(patchwork)
@@ -33,7 +35,7 @@ all_risk = all_risk %>%
 
 chik = all_risk$ifr[1]
 sars = 0.01 
-ebola = 0.5
+ebola = 0.6
 
 ifr_data = data.frame(
 ifr =  c(chik, sars, ebola),
@@ -70,7 +72,7 @@ calculate_sample_size_safety = function(p_d_I,
 }
 
 # Create a grid of values
-p_d_I_values = seq(0.00005, 0.51, 0.005)  # Disease severity
+p_d_I_values = seq(0.00005, 0.61, 0.005)  # Disease severity
 lambda_FOI_values = seq(0.01, 0.5, 0.01)  # Infection probability
 VE = c(0.95)
 
@@ -84,7 +86,6 @@ results = expand.grid(
 results$n = mapply(calculate_sample_size_safety,
                    p_d_I = results$p_d_I,
                    lambda_FOI = results$lambda_FOI,
-                   criterion = results$criterion,
                    VE = results$VE,
                    max_n = 4000000)
 
@@ -94,15 +95,15 @@ min(results$n)
 
 VE_high = results %>%
   filter(VE == 0.95) %>% 
+  mutate(n = ifelse(n>20000, 20000, n)) %>% 
   ggplot(aes(x = p_d_I, y = lambda_FOI*100, fill = n)) +
   geom_tile() +
   scale_fill_viridis_c(
     option = "plasma",
     trans = "log10",
-    alpha = 0.9,
-    breaks = c(5, 50, 500, 5000, 50000, 500000),
-    labels = scales::comma
-  ) +
+    limits = c(1, 20000),  # focus scale up to 5,000
+    breaks = c(2, 20, 200, 2000, 20000),
+    labels = c(2, 20, 200, 2000, ">20,000")) +
   geom_segment(
     data = ifr_data,
     aes(x = ifr , xend = ifr, y = 0, yend = 2),
@@ -133,18 +134,16 @@ VE_high = results %>%
     )
   ) 
 
-# Calculate for different FOI and criterion combinations
+# Calculate for different pathogens
 results_2 = expand.grid(
   p_d_I = ifr_data$ifr, 
   lambda_FOI = seq(0.01,0.5, 0.01),
-  criterion = criterion_values,
   VE = VE
 )
 
 results_2$n = mapply(calculate_sample_size_safety,
                    p_d_I = results_2$p_d_I,
                    lambda_FOI = results_2$lambda_FOI,
-                   criterion = results_2$criterion,
                    VE = results_2$VE,
                    max_n = 4000000)
 
@@ -200,7 +199,6 @@ ggsave(out1,
 calculate_sample_size_safety(
   p_d_I = all_risk$ifr[1],
   lambda_FOI = c(0.3),
-  criterion = 1,
   VE = 0.95,
   max_n = 400000
 )
@@ -209,7 +207,6 @@ calculate_sample_size_safety(
 calculate_sample_size_safety(
   p_d_I = all_risk$ifr[2],
   lambda_FOI = c(0.3),
-  criterion = 1,
   VE = 0.95,
   max_n = 400000
 )
@@ -220,7 +217,6 @@ calculate_sample_size_safety(
 calculate_sample_size_safety(
   p_d_I = 0.01,
   lambda_FOI = c(0.05),
-  criterion = 1,
   VE = 0.95,
   max_n = 400000
 )
@@ -230,7 +226,6 @@ calculate_sample_size_safety(
 calculate_sample_size_safety(
   p_d_I = 0.5,
   lambda_FOI = c(0.05),
-  criterion = 1,
   VE = 0.95,
   max_n = 400000
 )
