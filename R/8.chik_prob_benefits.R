@@ -1,5 +1,6 @@
 
-# Calculate probability of IXCHIQ benefit 
+# Script to calculate the probability that IXCHIQs benefits are greater than its risks. 
+# File outputs Figures 4 and S6, S8, S9. 
 
 library(Hmisc)
 library(truncnorm)
@@ -11,7 +12,7 @@ dir.create("output", showWarnings = FALSE)
 source("R/functions.R")
 
 
-cols = c("#FD8D3C", "#F768A1", "#C51B8A", "#7A0177")
+cols = c("#FFA500", "#FF1493", "#756BB1","#17A2B8")
 
 my_theme = theme_bw() +
   theme(
@@ -68,7 +69,6 @@ cvt = extract_beta_params(x = all_risk$trial_sae, n = all_risk$trial_pop)
 ci_half =  extract_beta_params(x = (all_risk$cases/2), n = all_risk$incidence)
 dv_3 = extract_beta_params(x = c(0,3), n = all_risk$doses)
 dv_0 = extract_beta_params(x = c(0,0), n = all_risk$doses)
-
 
 # calculate posterior probability benefit 
 all_data = simulate_vaccine_benefit(VE, AR, all_risk, di, dv, ci, cv, n, pop) 
@@ -155,26 +155,25 @@ p3 = all_data_ci_half %>%
   geom_vline(xintercept = 0.95, linetype = 2) 
 
 
-
-
-# 3 vaccine deaths not 1  
+# 3 vaccine deaths not 1 
 
 p4 = all_data_dv_0 %>% 
   bind_rows(all_data, all_data_dv_3, .id = "data") %>% 
   select(data, ar_scenario, age_group, d_benefit) %>% 
-  mutate(data = factor(data, labels = c("0 deaths 65+", "1 death 65+\n(baseline)", "3 deaths 65+")),
+  mutate(data = factor(data, labels = c("0 deaths 65+", "1 death 65+\n(baseline)", "3 death 65+")),
          ar = factor(ar_scenario, levels = c(2,3,4,1),
                      labels = c("Small outbreak",
                                 "Large outbreak",
                                 "Endemic",
                                 "Traveller"))) %>% 
-  ggplot(aes(x = d_benefit, y = age_group)) +
-  geom_point(aes(color = ar, shape = data), size = 2) +
+  filter(age_group == "65+") %>% 
+  ggplot(aes(x = d_benefit, y = ar)) +
+  geom_point(aes(color = data), size = 2) +
   xlim(0,1)  +
   my_theme +
   scale_color_manual(values= cols) +
   scale_shape_manual(values= c(16, 5, 8)) +
-  labs(y = "Age group", x = "Probability vaccine benefit\noutweighs risk of death") +
+  labs(y = " ", x = "Probability vaccine benefit\noutweighs risk of death") +
   guides(color = guide_legend(order = 1),
          shape = guide_legend(order = 2))  +
   geom_vline(xintercept = 0.95, linetype = 2) 
@@ -202,7 +201,7 @@ ggsave(
   p3,
   filename = "output/prob_vac_benefit_ci_half_new.jpeg",
   units = "cm",
-  height = 6,
+  height = 8,
   width = 14
 )
 
@@ -210,7 +209,7 @@ ggsave(
   p4,
   filename = "output/prob_vac_benefit_death_sa_new.jpeg",
   units = "cm",
-  height = 6,
+  height = 8,
   width = 14
 )
 
