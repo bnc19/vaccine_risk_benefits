@@ -1,3 +1,6 @@
+# Script to create Figure S1, demonstrating the factors affecting the risks and 
+# benefits of vaccination. 
+
 library(dplyr)
 library(ggplot2)
 library(tidyr)
