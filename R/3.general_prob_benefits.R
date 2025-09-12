@@ -1,3 +1,11 @@
+# Script to calculate the probability that a vaccine benefits outweigh the risks 
+# of vaccine SAEs under a Bayesian framework, given different probabilities of 
+# severe outcomes following infection, probabilities of adverse vaccine events 
+# and either 1,000 or 10,000 individuals vaccinated (cohort size), 
+# epidemiological scenarios (columns) and vaccine efficacies. File outputs 
+# Figure 2. 
+
+
 
 library(Hmisc)
 library(truncnorm)
