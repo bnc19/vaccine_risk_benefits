@@ -1,3 +1,6 @@
+# Script to calculate the number of cases averted given different risks of severe 
+# outcomes following infection or vaccine. File outputs Figure 1. 
+
 library(tidyverse)
 library(patchwork)
 
