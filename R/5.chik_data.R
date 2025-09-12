@@ -23,7 +23,7 @@ common_palette = c("#A0BFD8", "#FDB863")
 # --- import data
 
 all_risk = read.csv("data/all_risk.csv")[,-1]
-doses_data_country = read.csv("data/doses_country.csv")
+doses_data_country = read.csv("data/doses_data_us.csv")
 
 # sample 
 
@@ -56,7 +56,6 @@ p1 = ggplot(doses_data_country, aes(x = age_group, y = doses)) +
   theme(legend.position = "top") +
   scale_fill_manual(values = c(
     "#FD8D3C", 
-    "#F768A1",
     "#C51B8A",
     "#7A0177"  
   )) +
