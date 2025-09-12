@@ -1,5 +1,6 @@
-
-# Calculate IXCHIQ risks and benefits given range of VE and AR 
+# Script to run sensitivity analyses on the impact of VE and AR on expected number of medically 
+# attended chikungunya cases / SAEs and deaths averted by IXCHIQ vaccination. 
+# File outputs Figures S4 and S5. 
 
 library(Hmisc)
 library(truncnorm)
@@ -139,11 +140,11 @@ p1 = cases_averted_AR %>%
   theme(legend.position = "none") +
   scale_color_manual(values = c(
     "#FD8D3C", 
-    "#F768A1"
+    "#C51B8A"
   )) +
   scale_fill_manual(values = c(
     "#FD8D3C", 
-    "#F768A1"
+    "#C51B8A"
   )) +
   scale_y_continuous(breaks = c(-2, 0, 2, 4, 6))
 
@@ -167,15 +168,16 @@ p2 = cases_averted_AR %>%
   labs(x = " ",
        y = "Clinically-attented chikungunya\ncases / SAEs averted\n(per 10,000 vaccinated)") +
   my_theme +
+  theme(legend.position = c(0.07,0.76),
+        legend.title = element_blank()) +
   scale_color_manual(values = c(
     "#FD8D3C", 
-    "#F768A1"
+    "#C51B8A"
   )) +
   scale_fill_manual(values = c(
     "#FD8D3C", 
-    "#F768A1"
+    "#C51B8A"
   )) +
-  theme(legend.position = "none") +
   scale_y_continuous(breaks = c(-40, 0, 200, 400, 600))
 
 SA_ar = p2/p1
@@ -271,11 +273,11 @@ p3 = cases_averted_VE %>%
   scale_x_continuous(limits  = c(0,100))+
   scale_color_manual(values = c(
     "#FD8D3C", 
-    "#F768A1"
+    "#C51B8A"
   )) +
   scale_fill_manual(values = c(
     "#FD8D3C", 
-    "#F768A1"
+    "#C51B8A"
   )) +
   facet_wrap(~ar_scenario, ncol=4)
 
@@ -295,11 +297,11 @@ p4 = cases_averted_VE %>%
   scale_x_continuous(limits  = c(0,100))+
   scale_color_manual(values = c(
     "#FD8D3C", 
-    "#F768A1"
+    "#C51B8A"
   )) +
   scale_fill_manual(values = c(
     "#FD8D3C", 
-    "#F768A1"
+    "#C51B8A"
   )) +
   facet_wrap(~ar_scenario, ncol=4) +
   scale_y_continuous(breaks = c(-30, 0, 200, 400))
