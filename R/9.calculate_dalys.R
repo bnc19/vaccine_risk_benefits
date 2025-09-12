@@ -1,4 +1,6 @@
-# Improved DALY Calculation
+# Script to calculate DALYs averted by IXCHIQ vaccination. 
+# File outputs Figure 3C/F.
+
 library(tidyverse)
 
 set.seed(12)
