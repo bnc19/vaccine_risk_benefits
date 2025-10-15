@@ -1,21 +1,27 @@
-# Script to calculate DALYs averted by IXCHIQ vaccination. 
+#  Script to calculate DALYs averted by IXCHIQ vaccination. 
 # File outputs Figure 3C/F.
 
 library(tidyverse)
+library(cowplot)
 
 set.seed(12)
 
-my_theme = theme_classic() +
+my_theme = theme_void() +
   theme(
-    legend.text = element_text(size = 6),
-    legend.margin = margin(0, 0, 0, 0),  # Reduced to zero
-    legend.box.margin = margin(0, 0, 0, 0),  # Reduced to zero
-    legend.spacing.y = unit(0, "cm"),  # Reduced to zero
-    legend.spacing.x = unit(0, "cm"),  # Added to control horizontal spacing
-    axis.title = element_text(size = 7),
-    axis.text = element_text(size = 7),
-    strip.text = element_text(size = 7),
-    legend.title = element_text(size = 7)
+    legend.text = element_text(size = 8),
+    legend.title = element_text(size = 8),
+    legend.margin = margin(1, 1, 1, 1),
+    legend.box.margin = margin(0, 0, 0, 0),
+    legend.spacing.y = unit(0.1, "cm"),
+    axis.title = element_text(size = 8),
+    axis.text = element_text(size = 8),
+    axis.text.y = element_blank(),
+    axis.title.x = element_blank(),
+    axis.ticks.y = element_blank(),
+    plot.title = element_text(hjust = 0.5, size = 9),
+    axis.title.y = element_blank(),
+    legend.position = "none",
+    strip.text = element_blank()
   )
 
 # Load and prepare data ----
@@ -38,11 +44,11 @@ chronic_dw = 0.233
 # Vaccination parameters
 ve_symp = 0.95 # 0.5
 ve_inf = 0 
-coverage = 0.25
+coverage = 1 # per 10000 vaccinated 
 prob_symp_given_inf_vac = (1 - ve_symp) / (1 - ve_inf) * prob_symp_given_inf
 
 # Population 
-populations = c(young = 489834, old = 110157) 
+populations = c(young = 10000, old = 10000) # per 10000 vaccinated 
 ages = c(young = 41, old = 75.6)
 
 # Attack rates
@@ -137,11 +143,6 @@ calculate_outcomes_unvac = function(attack_rate, populations, young_probs, old_p
     chronic_old = severe_old * prob_chronic_given_sev,
     deaths_old = severe_old * old_probs$cfr,
     
-    # So names match vaccine scenario
-    deaths_young_total = deaths_young,
-    deaths_old_total = deaths_old,
-    severe_young_total = severe_young,
-    severe_old_total = severe_old
   )
   
   return(results)
@@ -169,9 +170,6 @@ calculate_outcomes_vac = function(attack_rate, populations, young_probs, old_pro
     chronic_young = severe_young * prob_chronic_given_sev,
     deaths_young = severe_young * young_probs$cfr,
     
-    severe_young_total = severe_young + vsae_young,
-    deaths_young_total = deaths_young + vdeaths_young,
-    
     # Old population outcomes  
     vsae_old = populations["old"] * coverage *  old_probs$prob_sae_vaccine,
     vdeaths_old = populations["old"] * coverage * old_probs$prob_death_vaccine,
@@ -179,10 +177,7 @@ calculate_outcomes_vac = function(attack_rate, populations, young_probs, old_pro
     mild_old = (cases_vac["old"] + cases_unvac["old"]) * old_probs$prob_mild,
     severe_old = (cases_vac["old"] + cases_unvac["old"]) * old_probs$prob_severe,
     chronic_old = severe_old * prob_chronic_given_sev,
-    deaths_old = severe_old * old_probs$cfr,
-    
-    severe_old_total = severe_old + vsae_old, # severe disease and sae are equivalent 
-    deaths_old_total = deaths_old + vdeaths_old # deaths are equivalent 
+    deaths_old = severe_old * old_probs$cfr
   )
   
   return(results)
@@ -197,80 +192,166 @@ names(v_scenario_results) = names(attack_rates)
 
 
 # Calculate DALYs ----
-calculate_dalys = function(results_df) {
-  results_df %>%
+calculate_dalys = function(results_df, populations, coverage, v = F) {
+  
+  
+  number_vacc = populations * coverage
+  
+  # DALYs due to infection 
+  results_df = results_df %>%
     mutate(
       # Years of Life Lost (YLL)
-      yll_young = deaths_young_total * (life_expect - ages["young"]),
-      yll_old = deaths_old_total * (life_expect - ages["old"]),
+      yll_young = deaths_young * (life_expect - ages["young"]),
+      yll_old = deaths_old * (life_expect - ages["old"]),
       
       # Years Lived with Disability (YLD)  
       yld_mild_young = mild_young * mild_dw * acute_duration,
-      yld_severe_young = severe_young_total * severe_dw * acute_duration,
+      yld_severe_young = severe_young * severe_dw * acute_duration,
       yld_chronic_young = chronic_young * chronic_dw * chronic_duration,
       
       yld_mild_old = mild_old * mild_dw * acute_duration,
-      yld_severe_old = severe_old_total * severe_dw * acute_duration,
+      yld_severe_old = severe_old * severe_dw * acute_duration,
       yld_chronic_old = chronic_old * chronic_dw * chronic_duration,
       
       # Total DALYs
-      dalys_young = yll_young + yld_mild_young + yld_severe_young + yld_chronic_young,
-      dalys_old = yll_old +  yld_mild_old + yld_severe_old + yld_chronic_old
+      dalys_young = (yll_young + yld_mild_young + yld_severe_young + yld_chronic_young) , 
+      dalys_old = (yll_old +  yld_mild_old + yld_severe_old + yld_chronic_old) 
       
     )
+  
+  if(v==T){
+    results_df = results_df %>%
+      mutate(
+        vyll_young = vdeaths_young * (life_expect - ages["young"]),
+        vyll_old = vdeaths_old * (life_expect - ages["old"]), 
+        vyld_severe_young = vsae_young * severe_dw * acute_duration,
+        vyld_severe_old = vsae_old * severe_dw * acute_duration,
+        vdalys_young = (vyll_young + vyld_severe_young) , 
+        vdalys_old = (vyll_old + vyld_severe_old) ,
+        totaldalys_young = dalys_young + vdalys_young,
+        totaldalys_old = dalys_old + vdalys_old
+      )
+    
+  }
+  
+  return(results_df)
+  
 }
 
 # Apply DALY calculation to all scenarios
-nv_results = map(nv_scenario_results, calculate_dalys)
-v_results = map(v_scenario_results, calculate_dalys)
+nv_results = map(nv_scenario_results, calculate_dalys, populations = populations, coverage = coverage)
+v_results = map(v_scenario_results, calculate_dalys,populations = populations, coverage = coverage, v=T)
 
-calculate_dalys_averted = function(nv_results, v_results, populations, coverage){
+
+calculate_dalys_averted = function(nv_results, v_results){
   
-  nv_results$dalys_averted_young = nv_results$dalys_young - v_results$dalys_young
-  nv_results$dalys_averted_old = nv_results$dalys_old - v_results$dalys_old
-  
-  number_vacc = populations * coverage
-  nv_results$dalys_averted_young_per_10000 =  nv_results$dalys_averted_young / number_vacc["young"] * 10000
-  nv_results$dalys_averted_old_per_10000 =  nv_results$dalys_averted_old / number_vacc["old"] * 10000
-  
+  nv_results$dalys_averted_young = nv_results$dalys_young - v_results$totaldalys_young
+  nv_results$dalys_averted_old =  nv_results$dalys_old - v_results$totaldalys_old
   
   return(nv_results)
 }
 
-all_results = map2(nv_results, v_results, calculate_dalys_averted, populations = populations, coverage = coverage)
+all_results = map2(nv_results, v_results, calculate_dalys_averted)
 
-
-# Summary statistics ----
-summarise_results = function(all_results) {
+summarise_results = function(all_results, exclude_cols = NULL) {
   map_dfr(all_results, ~{
-    .x %>%
-      summarise(
-        mean_young = mean(dalys_averted_young),
-        low_young = quantile(dalys_averted_young, 0.025),
-        high_young = quantile(dalys_averted_young, 0.975),
-        mean_old = mean(dalys_averted_old),
-        low_old = quantile(dalys_averted_old, 0.025),
-        high_old = quantile(dalys_averted_old, 0.975),
-        mean_young2 = mean(dalys_averted_young_per_10000),
-        low_young2 = quantile(dalys_averted_young_per_10000, 0.025),
-        high_young2 = quantile(dalys_averted_young_per_10000, 0.975),
-        mean_old2 = mean(dalys_averted_old_per_10000),
-        low_old2 = quantile(dalys_averted_old_per_10000, 0.025),
-        high_old2 = quantile(dalys_averted_old_per_10000, 0.975),
-        .groups = "drop"
+    # Get all numeric columns
+    numeric_cols <- .x %>% 
+      select(where(is.numeric)) %>% 
+      names()
+    
+    # Remove excluded columns if specified
+    if (!is.null(exclude_cols)) {
+      numeric_cols <- setdiff(numeric_cols, exclude_cols)
+    }
+    
+    # Create summary for each numeric column
+    summary_stats <- map_dfc(numeric_cols, function(col) {
+      tibble(
+        !!paste0("mean_", col) := mean(.x[[col]], na.rm = TRUE),
+        !!paste0("low_", col) := quantile(.x[[col]], 0.025, na.rm = TRUE),
+        !!paste0("high_", col) := quantile(.x[[col]], 0.975, na.rm = TRUE)
       )
+    })
+    
+    summary_stats
   }, .id = "scenario")
 }
 
-final_results = summarise_results(all_results)
-print(final_results)
+final_results = summarise_results(all_results, exclude_cols = "sample")
+vaccine_results = summarise_results(v_results, exclude_cols = "sample")
 
+
+# Plot dalys without vaccination 
+
+p_left = final_results %>% 
+  select(scenario, mean_dalys_young:high_dalys_old) %>% 
+  pivot_longer(-scenario) %>% 
+  mutate(name = str_replace(name, "_dalys_", ".")) %>% 
+  separate(name, into = c("name", "age")) %>%  
+  mutate(value =  - value) %>% 
+  pivot_wider(names_from = name, values_from = value) %>% 
+  mutate(scenario = factor(scenario, levels = c("low","high","endemic","traveller"),
+                           labels = c("Small\noutbreak",
+                                      "Large\noutbreak",
+                                      "Endemic",
+                                      "Traveller")),
+         age = factor(age, levels = c("young", "old"), labels = c("18-64", "65+"))) %>% 
+  ggplot(aes(y = mean, x = age)) +
+  geom_bar(stat = "identity", fill = "#A0BFD8") +
+  geom_errorbar(aes(ymin = low, ymax = high), width=0.25) +
+  coord_flip(clip = "off") +
+  facet_wrap(~ scenario, ncol = 1) +
+  my_theme  +
+  ylim(c(-100,0))
+
+# Plot Dalys with vaccination 
+
+vaccine_dalys = vaccine_results %>% 
+  select(scenario, contains("dalys")) %>%  
+  pivot_longer(-scenario) %>% 
+  separate(name, into = c("name", "outcome", "age")) %>%  
+  pivot_wider(names_from = name, values_from = value) %>% 
+  mutate(scenario = factor(scenario, levels = c("low","high","endemic","traveller"),
+                           labels = c("Small\noutbreak",
+                                      "Large\noutbreak",
+                                      "Endemic",
+                                      "Traveller")),
+         age = factor(age, levels = c("young", "old"), labels = c("18-64", "65+"))) 
+
+# Filter for mean deaths attributal to vaccine or infection 
+vdaly_mean_data = vaccine_dalys %>% 
+  filter(outcome %in% c("dalys", "vdalys")) %>% 
+  select(-low, -high)
+
+# Filter for error bars (from total deaths only (vaccine + infection))
+vdaly_error_data = vaccine_dalys %>% 
+  filter(outcome == "totaldalys") %>% 
+  select(-mean, -outcome) # - outcome so doesn't join by outcome 
+
+# Merge error bars into mean data
+vdaly_plot_data = vdaly_mean_data %>% 
+  left_join(vdaly_error_data)
+
+
+p_right = vdaly_plot_data %>% 
+  ggplot(aes(y = mean, x = age, fill = outcome)) +
+  geom_bar(stat = "identity") +
+  geom_errorbar(aes(ymin = low, ymax = high), width=0.25) +
+  coord_flip(clip = "off") +
+  scale_fill_manual(values = c("vdalys" = "#A3B18A",
+                               "dalys" = "#4B4B4B")) +
+  my_theme +
+  facet_wrap(~ scenario, ncol = 1) +
+  labs(y = "DALYs (per 10,000)") +
+  ylim(c(0,100))
 
 # Plot DALYS averted 
 
-final_plot = final_results %>%  
-  select(-c(mean_young:high_old)) %>% 
+dalys_averted = final_results %>%  
+  select(scenario, mean_dalys_averted_young:high_dalys_averted_old) %>% 
   pivot_longer(-scenario) %>% 
+  mutate(name = str_replace(name, "_dalys_averted_", ".")) %>% 
   separate(name, into = c("name", "age")) %>%  
   pivot_wider(names_from = name, values_from = value) %>% 
   mutate(scenario = factor(scenario, levels = c("low","high","endemic","traveller"),
@@ -278,31 +359,32 @@ final_plot = final_results %>%
                                       "Large\noutbreak",
                                       "Endemic",
                                       "Traveller")),
-         age = factor(age, levels = c("young2", "old2"), labels = c("18-64", "65+"))) %>% 
-  ggplot(aes(x = scenario, y = mean)) +
-  geom_col(aes(fill = scenario)) +
-  geom_errorbar(aes(ymin = low, ymax = high), width = 0.1)+
+         age = factor(age, levels = c("young", "old"), labels = c("18-64", "65+"))) %>% 
+  mutate(color = ifelse(mean <0, "0", "1")) %>% 
+  ggplot(aes(x = mean, y = age)) +
+  geom_bar(stat = "identity", aes(fill = color)) +
+  geom_errorbar(aes(xmin = low, xmax = high),  width =0.25) +
+  facet_wrap(~ scenario ,  ncol = 1) +
   my_theme +
-  labs(y="DALYs averted per 10,000 vaccinated", x = "") +
-  scale_fill_manual(values = c("#E6A23C", "#E06685", "#9689C3", "#5BB1C2")) +
-  theme( legend.position = "none") +
-  facet_wrap(~age) +
-  geom_hline(yintercept = 0, linetype = 2) +
-  annotate("rect", xmin = -Inf, xmax = Inf, ymin = -Inf, ymax = 0, fill = "grey", alpha = 0.4) +
-  scale_y_continuous(breaks = c(-20, 0, 20, 40 , 60, 80))
+  scale_fill_manual(values= c("#1B3B6F")) +
+  geom_vline(xintercept = 0, linetype = 2) +
+  xlim(c(-100,100))
 
 
-if(ve_symp != 0.5){
-ggsave(final_plot, 
-       filename = "output/plot_dalys.jpg",
+
+ggsave(dalys_averted, 
+       filename = "output/difference_in_dalys.pdf",
        units = "cm",
-       height = 5,
-       width = 12)
-} else{
-  ggsave(final_plot, 
-         filename = "output/plot_dalys_ve50.jpg",
-         units = "cm",
-         height = 5,
-         width = 12) 
-}
-final_plot
+       height = 8,
+       width = 10,
+)
+
+
+combined_plot = plot_grid(p_left, p_right)
+
+ggsave(combined_plot,
+       filename = "output/dalys.pdf",
+       units = "cm",
+       height = 8,
+       width = 10)
+
