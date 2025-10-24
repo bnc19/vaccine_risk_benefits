@@ -1,9 +1,9 @@
-## Characterising the benefits and risks of vaccines approved through accelerated pathways
+## A Framework for Risk-Benefit Analysis of Vaccines Approved Through Accelerated Pathways
 
-This repository contains the data and code needed to reproduce the results presented in the manuscript: Characterising the benefits and risks of vaccines approved through accelerated pathways.
+This repository contains the data and code needed to reproduce the results presented in the manuscript: A Framework for Risk-Benefit Analysis of Vaccines Approved Through Accelerated Pathways.
 
 
-Scripts can be run in order of 1-8 to reproduce the papers findings and figures. The purpose of each script are as follows: 
+Scripts can be run in order of 1-11 to reproduce the papers findings and figures. The purpose of each script are as follows: 
 
 * "1.example_risk.R": Script to create Figure S1, demonstrating the factors affecting the risks and benefits of vaccination. 
 * "2.risk_benefit_framework.R": Script to run framework to calculate the number of cases averted given different risks of severe outcomes following infection or vaccine, epidemiological scenarios and vaccine efficacies. File outputs Figure 1. 
