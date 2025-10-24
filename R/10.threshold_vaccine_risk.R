@@ -1,5 +1,6 @@
-# Script to calculate the maximum acceptable vaccine risk for different diseases, attack rates, vaccine efficacies. 
-# File outputs Figure 3.
+# Script to calculate the maximum acceptable vaccine risk for different 
+# diseases, attack rates, vaccine efficacies. 
+# File outputs Figure 2.
 
 # Set up 
 library(tidyverse)
@@ -115,14 +116,14 @@ general_fig = df_v_risk %>%
   ggplot(aes(x = ar, y = p_symp, fill = v_risk)) +
   geom_tile() +
   geom_point(data = covid_risk,
-             aes(x = ar, y = p_symp, shape = age, color = disease), size = 3) +
+             aes(x = ar, y = p_symp, shape = age, color = disease), size = 2) +
   geom_point(data = chik_risk,
-             aes(x = ar, y = p_symp, shape = age_group, color = disease), size = 3) +
+             aes(x = ar, y = p_symp, shape = age_group, color = disease), size = 2) +
   geom_point(data = ebola_risk,
-             aes(x = ar, y = p_symp, color = disease), size = 3) +
+             aes(x = ar, y = p_symp, color = disease), size = 2) +
   geom_point(data = measles_risk,
-             aes(x = ar, y = p_symp, color = disease), size = 3) +
-  facet_wrap(~ve) +
+             aes(x = ar, y = p_symp, color = disease), size = 2) +
+  facet_wrap(~ve, ncol = 1) +
   my_theme +
   labs(x = "Attack rate (%)", 
        y = "Probability of severe outcome\nfollowing infection", 
@@ -157,9 +158,9 @@ general_fig
 
 # Save
 ggsave(general_fig, 
-       filename = "output/general_disease_figure.jpg",
+       filename = "output/Fig2.pdf",
        units = "cm",
-       height = 12, width = 20)
+       height = 14, width = 14)
 
   
 # Comparing covid est for text

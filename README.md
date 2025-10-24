@@ -12,7 +12,7 @@ Scripts can be run in order of 1-8 to reproduce the papers findings and figures.
 * "5.chik_data.R": Script to plot the available data on IXCHIQ doses, SAEs, and risk of severe outcomes given chikungunya infection. File outputs Figure S3. 
 * "6.chik_risk_benefits.R": Script to calculate the expected number of medically attended chikungunya cases / SAEs and deaths per 10,000 individuals in each age group in the presence or absence of IXCHIQ vaccination across different epidemiological scenarios and age groups. File outputs Figure 3A,B,D,E.
 * "7.chik_risk_benefits_sensitivity.R": Script to run sensitivity analyses on the impact of VE and AR on expected number of medically attended chikungunya cases / SAEs and deaths averted by IXCHIQ vaccination. File outputs Figures S4 and S7. 
-* "8.chik_prob_benefits.R": Script to calculate the probability that IXCHIQs benefits are greater than its risks. File outputs Figures 4 and S6, S8, S9. 
+* "8.chik_prob_benefits.R": Script to calculate the probability that IXCHIQs benefits are greater than its risks. File outputs Figures 4 and S6, S7, S8. 
 * "9.calculate_dalys.R": Script to calculate DALYs averted by IXCHIQ vaccination. File outputs Figure 3C/F.
 * "10.threshold_vaccine_risk.R": # Script to calculate the maximum acceptable vaccine risk for different diseases, attack rates, vaccine efficacies. File outputs Figure 2.
 
