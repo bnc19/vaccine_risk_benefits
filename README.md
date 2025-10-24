@@ -15,5 +15,5 @@ Scripts can be run in order of 1-8 to reproduce the papers findings and figures.
 * "8.chik_prob_benefits.R": Script to calculate the probability that IXCHIQs benefits are greater than its risks. File outputs Figures 4 and S6, S7, S8. 
 * "9.calculate_dalys.R": Script to calculate DALYs averted by IXCHIQ vaccination. File outputs Figure 3C/F.
 * "10.threshold_vaccine_risk.R": # Script to calculate the maximum acceptable vaccine risk for different diseases, attack rates, vaccine efficacies. File outputs Figure 2.
-
+* "11.calculate_dalys.R": Script to calculate DALYs averted by IXCHIQ vaccination if all 3 deaths were vaccine linked. File outputs Figure S9.
 * "functions.R" Source functions. 
