@@ -1,4 +1,5 @@
-# Improved DALY Calculation
+#  Script to calculate DALYs averted by IXCHIQ vaccination if all 3 deaths were
+# vaccine linked. # File outputs Figure S9.
 library(tidyverse)
 library(cowplot)
 
