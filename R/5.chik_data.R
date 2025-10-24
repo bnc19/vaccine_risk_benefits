@@ -1,4 +1,5 @@
-# Plot IXCHIQ and infection data 
+# Script to plot the available data on IXCHIQ doses, SAEs, and risk of severe 
+# outcomes given chikungunya infection. File outputs Figure S3. 
 
 library(tidyverse)
 library(Hmisc)
@@ -40,7 +41,7 @@ all_long = all %>%
   separate(name, into = c("outcome", "cause"), sep = "_") %>% 
   separate(cause, into = c("cause", "stat")) %>% 
   mutate(outcome = factor(outcome, levels = c("pcase", "pdeath"), 
-                          labels = c("Clinically-attended chikungunya cases\n/ SAEs", "Deaths"))) %>% 
+                          labels = c("Medically-attended chikungunya cases\n/ SAEs", "Deaths"))) %>% 
   mutate(cause = factor(cause, levels = c("i", "v"), labels = c("Infection", "Vaccine"))) %>% 
   pivot_wider(names_from = stat)
 
@@ -100,7 +101,7 @@ p_final
 
 # Save figure
 ggsave(p_final, 
-       filename = "output/chik_data.jpeg",
+       filename = "output/chik_data.jpg",
        units = "cm",
        height = 10, width = 14)
 

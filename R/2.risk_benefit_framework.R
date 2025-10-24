@@ -156,6 +156,6 @@ c_SA = c_sensitivity_results %>%
 c_SA
 
 ggsave(c_SA,
-       filename = paste0("output/cases_averted_plot.jpeg"),
+       filename = paste0("output/Fig1.pdf"),
        units = "cm",
-       height = 10, width = 12)
+       height = 10, width = 14)

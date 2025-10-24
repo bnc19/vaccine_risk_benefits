@@ -1,6 +1,6 @@
-# Script to run sensitivity analyses on the impact of VE and AR on expected number of medically 
-# attended chikungunya cases / SAEs and deaths averted by IXCHIQ vaccination. 
-# File outputs Figures S4 and S5. 
+#  Script to run sensitivity analyses on the impact of VE and AR on expected 
+# number of medically attended chikungunya cases / SAEs and deaths averted by 
+# IXCHIQ vaccination. File outputs Figures S4 and S7.
 
 library(Hmisc)
 library(truncnorm)
@@ -166,7 +166,7 @@ p2 = cases_averted_AR %>%
     )
   }, AR) +
   labs(x = " ",
-       y = "Clinically-attented chikungunya\ncases / SAEs averted\n(per 10,000 vaccinated)") +
+       y = "Medically-attented chikungunya\ncases / SAEs averted\n(per 10,000 vaccinated)") +
   my_theme +
   theme(legend.position = c(0.07,0.76),
         legend.title = element_blank()) +
@@ -290,7 +290,7 @@ p4 = cases_averted_VE %>%
   geom_hline(yintercept = 0, linetype = 2) +
   geom_vline(xintercept = 95, linetype = 2, colour = "black") +
   labs(x = "", 
-       y = "Clinically-attented chikungunya\ncases / SAEs averted\n(per 10,000 vaccinated)") +
+       y = "Medically-attented chikungunya\ncases / SAEs averted\n(per 10,000 vaccinated)") +
   my_theme +
   theme(legend.position = c(0.07,0.76),
         legend.title = element_blank()) +
@@ -317,4 +317,6 @@ ggsave(VE_ar,
        units = "cm",
        height = 10,
        width = 14)
+
+
 

@@ -1,6 +1,6 @@
 
 # Script to calculate the probability that IXCHIQs benefits are greater than its risks. 
-# File outputs Figures 4 and S6, S8, S9. 
+# File outputs Figures 4 and S6, S7, S8.  
 
 library(Hmisc)
 library(truncnorm)
@@ -123,7 +123,7 @@ p2 = all_data_VE50 %>%
   ggplot(aes(x = value, y = age_group)) +
   geom_point(aes(color = ar, shape = data), size = 2) +
   xlim(0,1)  +
-  my_theme +
+  my_theme + theme(legend.position = "left") +
   scale_color_manual(values= cols) +
   scale_shape_manual(values= c(16, 5)) +
   labs(y = "Age group", x = "Probability vaccine benefit\noutweighs risk") +
@@ -183,7 +183,7 @@ p4 = all_data_dv_0 %>%
 
 ggsave(
   p1,
-  filename = "output/prob_vac_benefit_main_new.jpeg",
+  filename = "output/Fig4.pdf",
   units = "cm",
   height = 6,
   width = 14
@@ -191,7 +191,7 @@ ggsave(
 
 ggsave(
   p2,
-  filename = "output/prob_vac_benefit_VE50_new.jpeg",
+  filename = "output/prob_vac_benefit_VE50_new.jpg",
   units = "cm",
   height = 6,
   width = 14
@@ -199,7 +199,7 @@ ggsave(
 
 ggsave(
   p3,
-  filename = "output/prob_vac_benefit_ci_half_new.jpeg",
+  filename = "output/prob_vac_benefit_ci_half_new.jpg",
   units = "cm",
   height = 8,
   width = 14
@@ -207,7 +207,7 @@ ggsave(
 
 ggsave(
   p4,
-  filename = "output/prob_vac_benefit_death_sa_new.jpeg",
+  filename = "output/prob_vac_benefit_death_sa_new.jpg",
   units = "cm",
   height = 8,
   width = 14
@@ -221,3 +221,17 @@ cv_n = extract_beta_params(x = c(4,1), n = c(4000,1000))
 trial_data = simulate_vaccine_benefit(VE, AR, all_risk, di, dvt, ci, cv_n, n, pop) 
 
 trial_data %>%  select(c_benefit, age_group, ar_scenario)
+
+
+
+# add prob plot (from file 7)
+
+FigS7 =  plot_grid(p2, VE_ar,
+                   rel_heights = c(1,2),
+                   labels = c("a", "b"), ncol = 1)
+
+ggsave(FigS7, 
+       filename = "output/SupFig6.jpg",
+       units = "cm",
+       height = 18,
+       width = 14)

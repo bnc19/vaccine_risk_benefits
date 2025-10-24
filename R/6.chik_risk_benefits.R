@@ -1,5 +1,8 @@
 
-# Calculate IXCHIQ risks and benefits
+# Script to calculate the expected number of medically attended chikungunya 
+# cases / SAEs and deaths per 10,000 individuals in each age group in the 
+# presence or absence of IXCHIQ vaccination across different epidemiological 
+# scenarios and age groups. File outputs Figure 3A,B,D,E.
 
 
 library(Hmisc)

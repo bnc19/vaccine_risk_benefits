@@ -3,7 +3,7 @@
 # severe outcomes following infection, probabilities of adverse vaccine events 
 # and either 1,000 or 10,000 individuals vaccinated (cohort size), 
 # epidemiological scenarios (columns) and vaccine efficacies. File outputs 
-# Figure 2. 
+# Figure S2. 
 
 
 
@@ -138,7 +138,7 @@ p1 = summary_results %>%
 
 ggsave(
   p1,
-  filename = "output/prob_vac_benefit_general_new.jpeg",
+  filename = "output/prob_vac_benefit_general_new.jpg",
   units = "cm",
   height = 9,
   width = 14

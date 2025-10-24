@@ -1,6 +1,6 @@
 # Script to calculate sample size needed to achieve 80% power to detect at least 
 # one death as a function of attack rate and probability of death from infection. 
-# File outputs Figure S2. 
+# File outputs Figure S5. 
 
 library(tidyverse)
 library(patchwork)
