@@ -7,7 +7,7 @@ extract_beta_params = function(x, n, alpha0 = 1, beta0 = 1) {
   return(list(alpha = alpha, beta = beta))
 }
 
-
+# Function to estimate the probabiltiy of vaccine benefit 
 simulate_vaccine_benefit = function(VE, AR, all_risk, di, dv, ci, cv, n, pop) {
   
   # Initialize storage for results
@@ -101,3 +101,4 @@ simulate_vaccine_benefit = function(VE, AR, all_risk, di, dv, ci, cv, n, pop) {
   return(summary_results)
   
 }
+
